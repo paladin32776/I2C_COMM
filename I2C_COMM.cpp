@@ -41,6 +41,18 @@ unsigned int I2C_COMM::read_word(unsigned char regbyte)
   return dataword;
 }
 
+void I2C_COMM::read_multi_bytes(unsigned char regbyte, unsigned char N, unsigned char* byte_array)
+{
+  Wire.beginTransmission(addr);
+  Wire.write(byte(regbyte));
+  Wire.endTransmission(false);
+  delayMicroseconds(I2C_COMM_DELAY_US);
+  Wire.requestFrom(addr, (byte)N);
+  unsigned int n = 0;
+  while (Wire.available())
+    byte_array[n++] = Wire.read();
+}
+
 void I2C_COMM::write_regbyte(unsigned char regbyte)
 {
   Wire.beginTransmission(addr);         // transmit to device #addr

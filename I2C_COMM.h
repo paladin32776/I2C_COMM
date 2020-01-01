@@ -9,6 +9,7 @@ class I2C_COMM
       unsigned char addr;
       unsigned char read_byte(unsigned char regbyte);
       unsigned int read_word(unsigned char regbyte);
+      void read_multi_bytes(unsigned char regbyte, unsigned char N, unsigned char* byte_array);
       void write_regbyte(unsigned char regbyte);
       void write_byte(unsigned char regbyte, unsigned char databyte);
       void write_word(unsigned char regbyte, unsigned int dataword);
