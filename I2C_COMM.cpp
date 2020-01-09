@@ -41,6 +41,18 @@ unsigned int I2C_COMM::read_word(unsigned char regbyte)
   return dataword;
 }
 
+unsigned int I2C_COMM::read_word_no_reg()
+{
+  Wire.beginTransmission(addr);
+  Wire.endTransmission(false);
+  delayMicroseconds(I2C_COMM_DELAY_US);
+  Wire.requestFrom(addr, (byte)2);
+  unsigned int dataword = 0;
+  while (Wire.available())
+    dataword = (dataword<<8)+Wire.read();
+  return dataword;
+}
+
 void I2C_COMM::read_multi_bytes(unsigned char regbyte, unsigned char N, unsigned char* byte_array)
 {
   Wire.beginTransmission(addr);
@@ -76,6 +88,16 @@ void I2C_COMM::write_word(unsigned char regbyte, unsigned int dataword)
   Wire.write(byte(regbyte));            // sends instruction byte
   Wire.write(byte(dataword>>8));        // sends upper byte
   Wire.write(byte(dataword & 0xFF));    // sends lower byte
+  Wire.endTransmission();               // stop transmitting
+  delayMicroseconds(I2C_COMM_DELAY_US);
+}
+
+void I2C_COMM::write_multi_bytes(unsigned char regbyte, unsigned char N, unsigned char* byte_array)
+{
+  Wire.beginTransmission(addr);         // transmit to device #addr
+  Wire.write(byte(regbyte));            // sends instruction byte
+  for (int n=0; n<N; n++)
+    Wire.write(byte(byte_array[n]));        // sends bytes until N have been sent
   Wire.endTransmission();               // stop transmitting
   delayMicroseconds(I2C_COMM_DELAY_US);
 }
